@@ -125,6 +125,32 @@ void usageAndExit(const char* exe) {
   fprintf(stderr, "Usage: %s pi.png [width [height]]\n", exe);
   exit(1);
 }
+const char* colorCodes[] = {
+  "1;30",
+  "0;31",
+  "0;32",
+  "0;33",
+  "0;34",
+  "0;35",
+  "0;36",
+  "0;37",
+  "1;33",
+  "1;34",
+  "1;35",
+  "1;36",
+};
+
+void beginColor(int color) {
+  if(color >= sizeof(colorCodes) / sizeof(const char*)) {
+    fprintf(stderr, "bad color: %d\n", color);
+    exit(1);
+  }
+  printf("\x1b[%sm", colorCodes[color]);
+}
+
+void fixTerminal() {
+  printf("\x1b[7h\n");
+}
 
 int main(int argc, char **argv) {
   setvbuf(stdin, NULL, _IONBF, 0);
@@ -166,34 +192,52 @@ int main(int argc, char **argv) {
     usageAndExit(argv[0]);
   }
 
+  int colors[256];
+  for(int i = 0; i < 256; i++) {
+    colors[i] = 0;
+  }
+  for(int i = '0'; i <= '9'; i++) {
+    colors[i] = i - '0' + 1;
+  }
+
   try {
     BoolMap map(argv[1], width, height);
     int c = 0;
     int x = 0;
     int y = 0;
+    int lastColor = -1;
+
+    printf("\x1b[2J\x1b[0;0H\x1b[71");
+    atexit(fixTerminal);
+
     while ((c = fgetc(stdin)) != EOF) {
       if (c == '\n') {
         x = 0;
         y++;
       }
-      if (y >= map.height) {
-        y = 0;
-      }
-      while (!map.at(x, y)) {
-        // printf("%d %d %d %d\n", x, y, map.width, map.height);
-        printf(" ");
-        if (x >= map.width) {
+      if (x >= map.width) {
+        if(y < map.height) {
           printf("\n");
-          x = 0;
-          y++;
         }
-        if (y >= map.height) {
-          return 0;
-          // y = 0;
-        }
-        x++;
+        x = 0;
+        y++;
+      }
+      if (x == map.width - 1 && y == map.height - 1) {
+        y = 0;
+        x = 0;
+        printf("\x1b[1;1H");
+      }
+      int color;
+      if(map.at(x, y)) {
+        color = colors[c] + 1;
+      } else {
+        color = 0;
+      }
+      if(lastColor != color) {
+        beginColor(color);
       }
       printf("%c", c);
+      lastColor = color;
       x++;
     }
   } catch(PngError& e) {

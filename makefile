@@ -5,7 +5,7 @@
 all: termimage calcpi
 
 termimage: termimage.cpp
-	c++ -g3 -O0 termimage.cpp -o termimage -lpng
+	c++ -O3 termimage.cpp -o termimage -lpng
 
 calcpi: calcpi.cpp
 	c++ -O3 calcpi.cpp -o calcpi
