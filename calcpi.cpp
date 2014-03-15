@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
   piCalc.nextDigit();
   printf("%d.", piCalc.nextDigit());
   digits -= 2;
-  while(digits > 0) {
+  while(--digits > 0) {
     printf("%d", piCalc.nextDigit());
   }
 }
