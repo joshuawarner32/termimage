@@ -2,6 +2,9 @@
 # test: termimage
 # 	xxd -p /dev/urandom | tr -d '\n' | head -c 10000 | ./termimage pi.png
 
+example: all
+	./calcpi 100000 | ./termimage pi.png
+
 all: termimage calcpi
 
 termimage: termimage.cpp
