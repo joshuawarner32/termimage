@@ -134,7 +134,7 @@ const char* colorCodes[] = {
   "0;35",
   "0;36",
   "0;37",
-  "1;33",
+  "1;32",
   "1;34",
   "1;35",
   "1;36",
@@ -196,8 +196,20 @@ int main(int argc, char **argv) {
   for(int i = 0; i < 256; i++) {
     colors[i] = 0;
   }
-  for(int i = '0'; i <= '9'; i++) {
-    colors[i] = i - '0' + 1;
+
+  const int mode = 1;
+  switch(mode) {
+  case 0:
+    for(int i = '0'; i <= '9'; i++) {
+      colors[i] = i - '0' + 1;
+    }
+    break;
+  case 1:
+    colors['0'] = 7;
+    for(int i = '1'; i <= '9'; i++) {
+      colors[i] = 1;
+    }
+    break;
   }
 
   try {
